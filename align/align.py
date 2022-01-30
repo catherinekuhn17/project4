@@ -168,7 +168,7 @@ class NeedlemanWunsch:
 
             self._back_A[0][1:] =  np.ones(len(self._back_A[0][1:]), dtype=int)*1 # since can only come from X
             self._back_A[0][1] = 0 # since can only come from M
-            self._alignment_score = final_score
+            self.alignment_score = final_score
 
         return self._backtrace()
 
@@ -202,7 +202,7 @@ class NeedlemanWunsch:
                 self.seqA_align = self._seqA[i]+ self.seqA_align  # keep going with seq A
                 idx = self._back_B[i][j]
                 i-=1
-        return (self.seqA_align, self.seqB_align, self._alignment_score)
+        return (self.seqA_align, self.seqB_align, self.alignment_score)
 
 
 def read_fasta(fasta_file: str) -> Tuple[str, str]:

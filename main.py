@@ -16,10 +16,10 @@ def main():
     
     nw = NeedlemanWunsch('./substitution_matrices/BLOSUM62.mat', -10,-1)
     align_dict = {
-       'gg' : nw.align(hs_seq, gg_seq),
-       'mm' : nw.align(hs_seq, mm_seq),
-       'br' : nw.align(hs_seq, br_seq),
-       'tt' : nw.align(hs_seq, tt_seq)
+       'Gallus gallus' : nw.align(hs_seq, gg_seq),
+       'Mus musculus' : nw.align(hs_seq, mm_seq),
+       'Balaeniceps rex' : nw.align(hs_seq, br_seq),
+       'tursiops truncatus' : nw.align(hs_seq, tt_seq)
     }
     ordering = np.argsort([e[2] for e in align_dict.values()])[::-1]
     for idx in ordering:
