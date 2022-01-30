@@ -182,30 +182,27 @@ class NeedlemanWunsch:
         # Implement this method based upon the heuristic chosen in the align method above.
         i=-1
         j=-1
-        sA=''
-        sB=''
         idx=0
-        while abs(i)<=len(self._seqB) and abs(j)<=len(self._seqA):
-            print(i,j, idx)
+        while abs(i)<=len(self._seqA) and abs(j)<=len(self._seqB):
             if idx == 0: # aligned 
-                sA = self._seqA[j]+sA
-                sB = self._seqB[i]+sB
-                idx = self._back[j][i]
+                self.seqA_align = self._seqA[i] + self.seqA_align 
+                self.seqB_align = self._seqB[j] + self.seqB_align 
+                idx = self._back[i][j]
                 i-=1 # go back 1 in i direction
                 j-=1 # go back 1 in j direction
 
-            if idx == 1: 
-                sA = '-' + sA
-                sb = self._seqB[i]+sB 
-                idx = self._back_A[j][i]
-                i-=1
-
-            if idx == 2: 
-                sB = '-' + sB # give a gap to seq B
-                sA = self._seqA[j]+ sA # keep going with seq A
-                idx = self._back_B[j][i]
+            elif idx == 1: 
+                self.seqA_align = '-' + self.seqA_align 
+                self.seqB_align = self._seqB[j] + self.seqB_align 
+                idx = self._back_A[i][j]
                 j-=1
-        return (sA, sB, self._alignment_score)
+
+            elif idx == 2: 
+                self.seqB_align = '-' + self.seqB_align  # give a gap to seq B
+                self.seqA_align = self._seqA[i]+ self.seqA_align  # keep going with seq A
+                idx = self._back_B[i][j]
+                i-=1
+        return (self.seqA_align, self.seqB_align, self._alignment_score)
 
 
 def read_fasta(fasta_file: str) -> Tuple[str, str]:
@@ -246,5 +243,7 @@ def read_fasta(fasta_file: str) -> Tuple[str, str]:
             elif is_header and not first_header:
                 break
     return seq, header
+
+
 
 
