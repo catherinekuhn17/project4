@@ -1,4 +1,4 @@
-"![BuildStatus](https://github.com/catherinekuhn17/Project4/workflows//badge.svg?event=push)"
+"![BuildStatus](https://github.com/catherinekuhn17/project4/workflows/badge.svg?event=push)"
 
 # Project 4
 Needleman Wunsch Algorithm
