@@ -155,7 +155,10 @@ class NeedlemanWunsch:
                                self._gapA_matrix[i-1][j-1], # A
                                self._gapB_matrix[i-1][j-1]] # B
                 max_val = max(matrix_vals) # find which of M, A, or B is max
-                self._back[i][j] = matrix_vals.index(max_val) # assign which one gives max (0 for M, 1 for A, 2 for B)
+                self._back[i][j] = matrix_vals.index(max_val) # assign which one gives max (0 for M, 1 for A, 2 for B) 
+                # --> additional note, if the max is the same for more than one (say A and M) this index call returns 
+                # the index that occurs first, which would be M in that case(as M is first in the list). This assures 
+                # that we follow the highroad alignment as alignment is prioritized.
                 self._align_matrix[i][j] = self.sub_dict[(seqA[i-1], seqB[j-1])] + max_val # fill in new M value
 
                 # A is in the rows and so we want to look at i-1 (the previous row!)
@@ -180,10 +183,10 @@ class NeedlemanWunsch:
         self._alignment_score = final_score
 
         #some additional setup of the backtrace matrix (filling in what we haven't so far)
-        self._back_A[1:,0] = np.ones(len(self._back_B[1:,0]), dtype=int)*1 # can only come from A (no more left of B)
-        self._back_A[:,0][1] = 0 # since can only come from M
-        self._back_B[0][1:] =  np.ones(len(self._back_A[0][1:]), dtype=int)*2 # can only come from B (no more left of A)
-        self._back_B[0][1] = 0 # since can only come from M
+        self._back_A[:,0] = np.ones(len(self._back_B[:,0]), dtype=int)*1 # can only come from A (no more left of B) 
+        # --> also from how we filled this column (gap open + i*(gap extend))
+        self._back_B[0] =  np.ones(len(self._back_A[0]), dtype=int)*2 # can only come from B (no more left of A) 
+        # --> also from how we filled this row (gap open + i*(gap extend))
         
         # making these callable outside for unit tests
         self.align_matrix = self._align_matrix 
