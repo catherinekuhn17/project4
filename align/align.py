@@ -217,24 +217,24 @@ class NeedlemanWunsch:
             if abs(j) == len(self._seqB)+1 and abs(i) == len(self._seqA)+1: # cond'n that we have completed the alignment!
                 break
             else:
-                if idx == 0: # aligned (since M led to this)
-                    self.seqA_align = self._seqA[i] + self.seqA_align 
-                    self.seqB_align = self._seqB[j] + self.seqB_align 
+                if idx == 0: # M
+                    self.seqA_align = self._seqA[i] + self.seqA_align # continue in A
+                    self.seqB_align = self._seqB[j] + self.seqB_align # continue in B
                     idx = self._back[i][j]
                     i-=1 # go back 1 in i direction (A)
                     j-=1 # go back 1 in j direction (B)
 
-                elif idx == 1: # came from A
+                elif idx == 1: # A
                     self.seqB_align = '-' + self.seqB_align # inserting gap into B alignment
                     self.seqA_align = self._seqA[i] + self.seqA_align # continue in A
                     idx = self._back_A[i][j]
-                    i-=1 
+                    i-=1 # go back in A direction
 
-                elif idx == 2: # came from B
+                elif idx == 2: # B
                     self.seqA_align = '-' + self.seqA_align  # inserting gap into A alignment
                     self.seqB_align = self._seqB[j]+ self.seqB_align # continue in B
                     idx = self._back_B[i][j]
-                    j-=1
+                    j-=1 # go back in B direction
         return (self._alignment_score, self.seqA_align, self.seqB_align)
 
 
