@@ -21,10 +21,12 @@ def main():
        'Balaeniceps rex' : nw.align(hs_seq, br_seq),
        'tursiops truncatus' : nw.align(hs_seq, tt_seq)
     }
-    ordering = np.argsort([e[2] for e in align_dict.values()])[::-1]
-    for idx in ordering:
+    ordering = np.argsort([e[0] for e in align_dict.values()])[::-1]
+    for i,idx in enumerate(ordering, 1):
+        print(f'{i}) species: {list(align_dict.keys())[idx]}')
+    for idx in ordering:    
         print(f'species: {list(align_dict.keys())[idx]}')
-        print(f'score: {list(align_dict.values())[idx][2]}')
+        print(f'score: {list(align_dict.values())[idx][0]}')
         
 
     # TODO Align all species to humans and print species in order of most similar to human BRD

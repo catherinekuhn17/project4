@@ -98,15 +98,25 @@ class NeedlemanWunsch:
                     break
         return dict_sub
 
+    
     def align(self, seqA: str, seqB: str) -> Tuple[float, str, str]:
         """
-        # TODO: Fill in the Needleman-Wunsch Algorithm below
-        to perform global sequence alignment of seqA and seqB
-        and return a tuple with the following format
-        (alignment score, seqA alignment, seqB alignment)
-        Also, write up a docstring for this function using the
-        _read_sub_matrix as an example.
-        Don't forget to comment your code!
+        This method aligns two sequences using the Needleman-Wunsch algorithm. Match score is determined by a scoring matrix,
+        and gap opening/extension scores were determined when the NeedlemanWunsch object was created. 
+        
+        Parameters
+        ----------
+            seqA : str
+                The first sequence to be aligned
+            seqB : str
+                The second sequence to be aligned
+        
+        Returns
+        -------
+            alignment : tuple
+                A tuple containing the final alignment score, as determined by the algorithm, as well as the alignment of 
+                the two sequences, formated (alignment score, alignment seq 1, alignment seq 2)
+                
         """
         self._seqA = seqA
         self._seqB = seqB
@@ -128,11 +138,14 @@ class NeedlemanWunsch:
         # Resetting alignment score in case method is called more than once
         self.alignment_score = 0
 
-        self._align_matrix[0][0] = 0 #set score matrix 0,0 to 0
+        # set score matrix 0,0 to 0
+        self._align_matrix[0][0] = 0 
+        
+        # set first columns as gap A matrix to extending gaps, and first row of gap B matrix to extending gaps
         self._gapA_matrix[:,0] = [self.gap_open + i*self.gap_extend 
-                                      for i in range(len(self._align_matrix))] # want to change column 1
+                                      for i in range(len(self._align_matrix))] 
         self._gapB_matrix[0] = [self.gap_open + i*self.gap_extend 
-                                      for i in range(len(self._align_matrix[0]))] # want to change row 1
+                                      for i in range(len(self._align_matrix[0]))] 
         
         # creation of all Matrices
         for i in np.arange(1, len(self._align_matrix)): # going by rows (so A)
@@ -145,64 +158,84 @@ class NeedlemanWunsch:
                 self._back[i][j] = matrix_vals.index(max_val) # assign which one gives max (0 for M, 1 for A, 2 for B)
                 self._align_matrix[i][j] = self.sub_dict[(seqA[i-1], seqB[j-1])] + max_val # fill in new M value
 
-                # A is in the rows (like Y in the notes), and so we want to look at j-1
-                matrix_vals_A = [self.gap_open + self.gap_extend + self._align_matrix[i][j-1], # M
-                                 self.gap_extend + self._gapA_matrix[i][j-1], # A
-                                 self.gap_open + self.gap_extend + self._gapB_matrix[i][j-1]] # B      
+                # A is in the rows (like Y in the notes), and so we want to look at i-1 (the previous row)
+                matrix_vals_A = [self.gap_open + self.gap_extend + self._align_matrix[i-1][j], # M
+                                 self.gap_extend + self._gapA_matrix[i-1][j], # A
+                                 self.gap_open + self.gap_extend + self._gapB_matrix[i-1][j]] # B      
                 max_val_A = max(matrix_vals_A)
                 self._back_A[i][j] = matrix_vals_A.index(max_val_A) # backtrack matrix for these vals
-                self._gapA_matrix[i][j] = max_val_A
+                self._gapA_matrix[i][j] = max_val_A # fill in new A value
 
-                # B is from the columns, so we want to look at i-1
-                matrix_vals_B = [self.gap_open + self.gap_extend + self._align_matrix[i-1][j], # M
-                                 self.gap_open + self.gap_extend + self._gapA_matrix[i-1][j], # A
-                                 self.gap_extend + self._gapB_matrix[i-1][j]] # B
-                max_val_B = max(matrix_vals_B)
+                # B is in the columns, so we want to look at j-1 (the previous column)
+                matrix_vals_B = [self.gap_open + self.gap_extend + self._align_matrix[i][j-1], # M
+                                 self.gap_open + self.gap_extend + self._gapA_matrix[i][j-1], # A
+                                 self.gap_extend + self._gapB_matrix[i][j-1]] # B
+                max_val_B = max(matrix_vals_B) 
                 self._back_B[i][j] = matrix_vals_B.index(max_val_B) # backtrack matrix for these vals
-                self._gapB_matrix[i][j] = max_val_B
-            final_score_all = [self._align_matrix[-1][-1], self._gapA_matrix[-1][-1], self._gapB_matrix[-1][-1]]
-            final_score = max(final_score_all)
-            final_score_idx = final_score_all.index(final_score)
-            self._back_B[1:,0] = np.ones(len(self._back_B[1:,0]), dtype=int)*2 # since can only come from Y
-            self._back_B[:,0][1] = 0 # since can only come from M
+                self._gapB_matrix[i][j] = max_val_B # fill in new B value
+                
+        final_score_all = [self._align_matrix[-1][-1], self._gapA_matrix[-1][-1], self._gapB_matrix[-1][-1]]
+        final_score = max(final_score_all) # final score is the max of the last box
+        self._final_score_idx = final_score_all.index(final_score) # determine if final score came from M, A, or B
+        self._alignment_score = final_score
 
-            self._back_A[0][1:] =  np.ones(len(self._back_A[0][1:]), dtype=int)*1 # since can only come from X
-            self._back_A[0][1] = 0 # since can only come from M
-            self.alignment_score = final_score
+        #some additional setup of the backtrace matrix (filling in what we haven't so far)
+        self._back_A[1:,0] = np.ones(len(self._back_B[1:,0]), dtype=int)*1 # since can only come from A
+        self._back_A[:,0][1] = 0 # since can only come from M
+        self._back_B[0][1:] =  np.ones(len(self._back_A[0][1:]), dtype=int)*2 # since can only come from B
+        self._back_B[0][1] = 0 # since can only come from M
+        self.back = self._back
+        self.back_A = self._back_A
+        self.back_B = self._back_B
+        
+        # making these callable outside for unit tests
+        self.align_matrix = self._align_matrix 
+        self.gapA_matrix = self._gapA_matrix
+        self.gapB_matrix = self._gapB_matrix 
 
-        return self._backtrace()
+
+
+        alignment = self._backtrace()
+        return alignment
 
     def _backtrace(self) -> Tuple[float, str, str]:
         """
-        # TODO Implement the traceback procedure method below
-        based on the heuristic you implement in the align method.
-        The traceback method should return a tuple of the alignment
-        score, the seqA alignment and the seqB alignment respectively.
+        This method backtraces through the three backtrace matrices created in the method align to 
+        create the final alignment.
+        
+        Returns:
+        -------
+        a tuple formatted (alignment score, alignment for seq A, alignment for seq B)
+        
         """
         # Implement this method based upon the heuristic chosen in the align method above.
-        i=-1
-        j=-1
-        idx=0
-        while abs(i)<=len(self._seqA) and abs(j)<=len(self._seqB):
-            if idx == 0: # aligned 
-                self.seqA_align = self._seqA[i] + self.seqA_align 
-                self.seqB_align = self._seqB[j] + self.seqB_align 
-                idx = self._back[i][j]
-                i-=1 # go back 1 in i direction
-                j-=1 # go back 1 in j direction
+        
+        i = -1 # we want to go backwards with i and j until we reach the beginning
+        j = -1
+        idx = self._final_score_idx # we are starting here
+        while abs(i)<=len(self._seqA)+1 and abs(j)<=len(self._seqB)+1:
+            if abs(j) == len(self._seqB)+1 and abs(i) == len(self._seqA)+1: # cond'n that we have completed the alignment!
+                break
+            else:
+                if idx == 0: # aligned (since M led to this)
+                    self.seqA_align = self._seqA[i] + self.seqA_align 
+                    self.seqB_align = self._seqB[j] + self.seqB_align 
+                    idx = self._back[i][j]
+                    i-=1 # go back 1 in i direction (A)
+                    j-=1 # go back 1 in j direction (B)
 
-            elif idx == 1: 
-                self.seqA_align = '-' + self.seqA_align 
-                self.seqB_align = self._seqB[j] + self.seqB_align 
-                idx = self._back_A[i][j]
-                j-=1
+                elif idx == 1: # came from A
+                    self.seqB_align = '-' + self.seqB_align # inserting gap into B alignment
+                    self.seqA_align = self._seqA[i] + self.seqA_align # continue in A
+                    idx = self._back_A[i][j]
+                    i-=1 
 
-            elif idx == 2: 
-                self.seqB_align = '-' + self.seqB_align  # give a gap to seq B
-                self.seqA_align = self._seqA[i]+ self.seqA_align  # keep going with seq A
-                idx = self._back_B[i][j]
-                i-=1
-        return (self.seqA_align, self.seqB_align, self.alignment_score)
+                elif idx == 2: # came from B
+                    self.seqA_align = '-' + self.seqA_align  # inserting gap into A alignment
+                    self.seqB_align = self._seqB[j]+ self.seqB_align # continue in B
+                    idx = self._back_B[i][j]
+                    j-=1
+        return (self._alignment_score, self.seqA_align, self.seqB_align)
 
 
 def read_fasta(fasta_file: str) -> Tuple[str, str]:
@@ -243,6 +276,7 @@ def read_fasta(fasta_file: str) -> Tuple[str, str]:
             elif is_header and not first_header:
                 break
     return seq, header
+
 
 
 
