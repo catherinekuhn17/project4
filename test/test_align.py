@@ -32,7 +32,8 @@ def test_nw_alignment():
 def test_nw_backtrace():
     """
     This unit tests compares the output of the algorithm in aligning two 
-    sequences, against the correct output.
+    sequences, against the correct output. This is to check for correct
+    implementation of backtracing
     """
     seq3, _ = read_fasta("./data/test_seq3.fa")
     seq4, _ = read_fasta("./data/test_seq4.fa")

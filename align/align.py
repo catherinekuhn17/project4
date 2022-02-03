@@ -102,7 +102,8 @@ class NeedlemanWunsch:
     def align(self, seqA: str, seqB: str) -> Tuple[float, str, str]:
         """
         This method aligns two sequences using the Needleman-Wunsch algorithm. Match score is determined by a scoring matrix,
-        and gap opening/extension scores were determined when the NeedlemanWunsch object was created. 
+        and gap opening/extension scores were determined when the NeedlemanWunsch object was created. Both the alignment score
+        and sequence alignments are ultimately determined
         
         Parameters
         ----------
@@ -203,7 +204,8 @@ class NeedlemanWunsch:
         
         Returns:
         -------
-        a tuple formatted (alignment score, alignment for seq A, alignment for seq B)
+            alignment_tup : tuple
+                a tuple formatted (alignment score, alignment for seq A, alignment for seq B)
         
         """        
         i = -1 # we want to go backwards with i and j until we reach the beginning (start at the end of the sequences)
@@ -231,7 +233,8 @@ class NeedlemanWunsch:
                     self.seqB_align = self._seqB[j]+ self.seqB_align # continue in B
                     idx = self._back_B[i][j] # where to go next
                     j-=1 # go back in B direction
-        return (self._alignment_score, self.seqA_align, self.seqB_align)
+        alignment_tup =  (self._alignment_score, self.seqA_align, self.seqB_align)
+        return alignment_tup
 
 
 def read_fasta(fasta_file: str) -> Tuple[str, str]:
