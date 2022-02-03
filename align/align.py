@@ -157,7 +157,7 @@ class NeedlemanWunsch:
                 max_val = max(matrix_vals) # find which of M, A, or B is max
                 self._back[i][j] = matrix_vals.index(max_val) # assign which one gives max (0 for M, 1 for A, 2 for B) 
                 # --> additional note, if the max is the same for more than one (say A and M) this index call returns 
-                # the index that occurs first, which would be M in that case(as M is first in the list). This assures 
+                # the index that occurs first, which would be M in that case (as M is first in the list). This assures 
                 # that we follow the highroad alignment as alignment is prioritized.
                 self._align_matrix[i][j] = self.sub_dict[(seqA[i-1], seqB[j-1])] + max_val # fill in new M value
 
