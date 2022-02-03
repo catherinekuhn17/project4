@@ -19,23 +19,16 @@ def main():
        'Gallus gallus' : nw.align(hs_seq, gg_seq),
        'Mus musculus' : nw.align(hs_seq, mm_seq),
        'Balaeniceps rex' : nw.align(hs_seq, br_seq),
-       'tursiops truncatus' : nw.align(hs_seq, tt_seq)
+       'Tursiops truncatus' : nw.align(hs_seq, tt_seq)
     }
     ordering = np.argsort([e[0] for e in align_dict.values()])[::-1]
+    print('Species Ordering:')
     for i,idx in enumerate(ordering, 1):
-        print(f'{i}) species: {list(align_dict.keys())[idx]}')
+        print(f'{i}) {list(align_dict.keys())[idx]}')
+    print()
+    print('Species Scores:')
     for idx in ordering:    
-        print(f'species: {list(align_dict.keys())[idx]}')
-        print(f'score: {list(align_dict.values())[idx][0]}')
+        print(f'{list(align_dict.keys())[idx]}: {list(align_dict.values())[idx][0]}')
         
-
-    # TODO Align all species to humans and print species in order of most similar to human BRD
-    # using gap opening penalty of -10 and a gap extension penalty of -1 and BLOSUM62 matrix
-    pass
-
-    # TODO print all of the alignment score between each species BRD2 and human BRD2
-    # using gap opening penalty of -10 and a gap extension penalty of -1 and BLOSUM62 matrix
-    pass
-
 if __name__ == "__main__":
     main()

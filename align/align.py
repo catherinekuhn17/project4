@@ -180,9 +180,9 @@ class NeedlemanWunsch:
         self._alignment_score = final_score
 
         #some additional setup of the backtrace matrix (filling in what we haven't so far)
-        self._back_A[1:,0] = np.ones(len(self._back_B[1:,0]), dtype=int)*2 # first column, since can only come from B (basically when we've finished A)
+        self._back_A[1:,0] = np.ones(len(self._back_B[1:,0]), dtype=int)*1 # can only come from A (no more left of B)
         self._back_A[:,0][1] = 0 # since can only come from M
-        self._back_B[0][1:] =  np.ones(len(self._back_A[0][1:]), dtype=int)*1 # since can only come from A (basically when we've finished B)
+        self._back_B[0][1:] =  np.ones(len(self._back_A[0][1:]), dtype=int)*2 # can only come from B (no more left of A)
         self._back_B[0][1] = 0 # since can only come from M
         
         # making these callable outside for unit tests
