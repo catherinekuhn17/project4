@@ -1,4 +1,4 @@
-"![BuildStatus](https://github.com/catherinekuhn17/project4/.github/workflows/main.yml/badge.svg?event=push)"
+"![BuildStatus](https://github.com/catherinekuhn17/project4/actions/workflows/main.yml/badge.svg?event=push)"
 
 
 # Project 4
